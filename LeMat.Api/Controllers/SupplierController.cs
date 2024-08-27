@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
 using LeMat.Domain.Commands;
 using LeMat.Domain.Entities;
 using LeMat.Domain.Handlers;
 using LeMat.Domain.Repositories;
 using LeMat.Shared.Commands;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LeMat.Api.Controllers;
 
@@ -14,15 +14,16 @@ public class SupplierController : ControllerBase {
 	public SupplierController() { }
 
 	[HttpGet]
-	public IEnumerable<Supplier> Get([FromServices] ISupplierRepository repository) {
-		return repository.GetAll();
+	public async Task<CommandResult> Get([FromServices] ISupplierRepository repository) {
+		List<Supplier> suppliers = await repository.GetAllAsync();
+		return new CommandResult(suppliers);
 	}
 
 	[HttpPost]
-	public GenericCommandResult Create(
+	public async Task<CommandResult> Create(
 		[FromBody] CreateSupplierCommand command,
 		[FromServices] SupplierHandler handler
 	) {
-		return (GenericCommandResult)handler.Handle(command);
+		return (CommandResult)await handler.Handle(command);
 	}
 }

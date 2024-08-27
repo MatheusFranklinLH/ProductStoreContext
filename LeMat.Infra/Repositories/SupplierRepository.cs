@@ -13,17 +13,17 @@ public class SupplierRepository : ISupplierRepository {
 		_context = context;
 	}
 
-	public void Create(Supplier supplier) {
-		_context.Suppliers.Add(supplier);
-		_context.SaveChanges();
+	public async Task CreateAsync(Supplier supplier) {
+		await _context.Suppliers.AddAsync(supplier);
+		await _context.SaveChangesAsync();
 	}
 
-	public bool DocumentExists(Document document) {
-		return _context.Suppliers.AsNoTracking()
-			.Any(x => x.Document.Number == document.Number && x.Document.Type == document.Type);
+	public async Task<bool> DocumentExistsAsync(Document document) {
+		return await _context.Suppliers.AsNoTracking()
+			.AnyAsync(x => x.Document.Number == document.Number && x.Document.Type == document.Type);
 	}
 
-	public IEnumerable<Supplier> GetAll() {
-		return _context.Suppliers.AsNoTracking();
+	public async Task<List<Supplier>> GetAllAsync() {
+		return await _context.Suppliers.AsNoTracking().ToListAsync();
 	}
 }

@@ -4,8 +4,8 @@ using LeMat.Domain.ValueObjects;
 namespace LeMat.Domain.Repositories;
 
 public interface ISupplierRepository {
-	void Create(Supplier supplier);
+	Task CreateAsync(Supplier supplier);
 
-	bool DocumentExists(Document document);
-	IEnumerable<Supplier> GetAll();
+	Task<bool> DocumentExistsAsync(Document document);
+	Task<List<Supplier>> GetAllAsync();
 }

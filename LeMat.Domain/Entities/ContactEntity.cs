@@ -11,7 +11,14 @@ public abstract class ContactEntity : Entity {
 		Address = address;
 		Document = document;
 
-		AddNotifications(Telephone, Email, Address, Document);
+		if (Telephone is not null)
+			AddNotifications(Telephone);
+		if (Email is not null)
+			AddNotifications(Email);
+		if (Address is not null)
+			AddNotifications(Address);
+		if (Document is not null)
+			AddNotifications(Document);
 	}
 
 	public Telephone Telephone { get; private set; }
