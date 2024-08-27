@@ -6,6 +6,15 @@ namespace LeMat.Domain.Entities;
 public abstract class ContactEntity : Entity {
 	protected ContactEntity() { }
 	protected ContactEntity(Telephone telephone, Email email, Address address, Document document) {
+		UpdateContact(telephone, email, address, document);
+	}
+
+	public Telephone Telephone { get; private set; }
+	public Email Email { get; private set; }
+	public Address Address { get; private set; }
+	public Document Document { get; private set; }
+
+	public void UpdateContact(Telephone telephone, Email email, Address address, Document document) {
 		Telephone = telephone;
 		Email = email;
 		Address = address;
@@ -20,9 +29,4 @@ public abstract class ContactEntity : Entity {
 		if (Document is not null)
 			AddNotifications(Document);
 	}
-
-	public Telephone Telephone { get; private set; }
-	public Email Email { get; private set; }
-	public Address Address { get; private set; }
-	public Document Document { get; private set; }
 }

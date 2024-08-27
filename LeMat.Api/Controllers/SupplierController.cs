@@ -14,14 +14,31 @@ public class SupplierController : ControllerBase {
 	public SupplierController() { }
 
 	[HttpGet]
-	public async Task<CommandResult> Get([FromServices] ISupplierRepository repository) {
-		List<Supplier> suppliers = await repository.GetAllAsync();
-		return new CommandResult(suppliers);
+	public async Task<ICommandResult> Get([FromServices] ISupplierRepository repository, int? id) {
+		if (id is null)
+			return new CommandResult(await repository.GetAllAsync());
+		return new CommandResult(await repository.GetByIdAsync(id.Value));
 	}
 
 	[HttpPost]
-	public async Task<CommandResult> Create(
+	public async Task<ICommandResult> Create(
 		[FromBody] CreateSupplierCommand command,
+		[FromServices] SupplierHandler handler
+	) {
+		return (CommandResult)await handler.Handle(command);
+	}
+
+	[HttpPut]
+	public async Task<ICommandResult> Update(
+		[FromBody] UpdateSupplierCommand command,
+		[FromServices] SupplierHandler handler
+	) {
+		return (CommandResult)await handler.Handle(command);
+	}
+
+	[HttpDelete]
+	public async Task<ICommandResult> Delete(
+		[FromBody] DeleteIdCommand command,
 		[FromServices] SupplierHandler handler
 	) {
 		return (CommandResult)await handler.Handle(command);

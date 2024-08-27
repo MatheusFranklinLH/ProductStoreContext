@@ -1,4 +1,5 @@
 using LeMat.Domain.Entities;
+using LeMat.Domain.Queries;
 using LeMat.Domain.Repositories;
 using LeMat.Domain.ValueObjects;
 using LeMat.Infra.Contexts;
@@ -18,6 +19,16 @@ public class SupplierRepository : ISupplierRepository {
 		await _context.SaveChangesAsync();
 	}
 
+	public async Task UpdateAsync(Supplier supplier) {
+		_context.Suppliers.Update(supplier);
+		await _context.SaveChangesAsync();
+	}
+
+	public async Task DeleteAsync(Supplier supplier) {
+		_context.Suppliers.Remove(supplier);
+		await _context.SaveChangesAsync();
+	}
+
 	public async Task<bool> DocumentExistsAsync(Document document) {
 		return await _context.Suppliers.AsNoTracking()
 			.AnyAsync(x => x.Document.Number == document.Number && x.Document.Type == document.Type);
@@ -25,5 +36,10 @@ public class SupplierRepository : ISupplierRepository {
 
 	public async Task<List<Supplier>> GetAllAsync() {
 		return await _context.Suppliers.AsNoTracking().ToListAsync();
+	}
+
+	public async Task<Supplier> GetByIdAsync(int id) {
+		var exp = SupplierQueries.GetSupplier(id);
+		return await _context.Suppliers.AsNoTracking().FirstOrDefaultAsync(exp);
 	}
 }
