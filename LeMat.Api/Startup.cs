@@ -17,7 +17,7 @@ public class Startup {
 		services.AddControllers();
 
 		services.AddDbContext<SPContext>(optionsBuilder => {
-			optionsBuilder.UseNpgsql(Configuration.GetConnectionString("connectionString"), options => options.MigrationsHistoryTable("__MigrationsHistory", "spc"));
+			optionsBuilder.UseNpgsql(Configuration.GetConnectionString("connectionString"), options => options.MigrationsHistoryTable("__MigrationsHistory", "lemat"));
 			if (CurrentEnvironment.IsDevelopment()) {
 				optionsBuilder.LogTo(System.Console.WriteLine, new[] { DbLoggerCategory.Database.Name });
 				optionsBuilder.EnableSensitiveDataLogging();
