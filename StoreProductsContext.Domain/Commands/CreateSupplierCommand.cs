@@ -1,4 +1,5 @@
 using Flunt.Notifications;
+using Flunt.Validations;
 using StoreProductsContext.Shared.Commands;
 
 namespace StoreProductsContext.Domain.Commands;
@@ -17,5 +18,10 @@ public class CreateSupplierCommand : Notifiable<Notification>, ICommand {
 	public string State { get; set; }
 	public string Country { get; set; }
 	public string ZipCode { get; set; }
-	public void Validate() { }
+	public void Validate() {
+		AddNotifications(new Contract<CreateSupplierCommand>()
+			.Requires()
+			.IsGreaterThan(Name, 3, "Name", "Nome deve conter no mínimo 3 caracteres")
+		);
+	}
 }

@@ -4,6 +4,7 @@ using StoreProductsContext.Shared.Entities;
 namespace StoreProductsContext.Domain.Entities;
 
 public abstract class ContactEntity : Entity {
+	protected ContactEntity() { }
 	protected ContactEntity(Telephone telephone, Email email, Address address, Document document) {
 		Telephone = telephone;
 		Email = email;

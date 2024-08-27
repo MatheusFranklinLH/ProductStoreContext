@@ -5,14 +5,13 @@ using StoreProductsContext.Shared.ValueObjects;
 namespace StoreProductsContext.Domain.ValueObjects;
 
 public class Document : ValueObject {
-
-	public Document(string number, Enums.EDocumentType type) {
+	public Document(string number, EDocumentType type) {
 		Number = number;
 		Type = type;
 
 		AddNotifications(new Contract<string>()
 			.Requires()
-			.IsTrue(Validate(), "Document.Number", "Documento inválido")
+			.IsTrue(Validate(), "Document.Number", "Documento não contém a quantidade certa de digitos")
 		);
 	}
 	public string Number { get; private set; }
