@@ -39,8 +39,12 @@ public class SupplierHandler :
 
 		if (!IsValid)
 			return new Response(Notifications, 400, "Impossível criar fornecedor!");
-
-		await _repository.CreateAsync(supplier);
+		try {
+			await _repository.CreateAsync(supplier);
+		}
+		catch {
+			return new Response(null, 500, "Não foi possível criar fornecedor!");
+		}
 
 		return new Response(supplier.Id, 200, "Fornecedor criado com sucesso!");
 	}
@@ -65,7 +69,12 @@ public class SupplierHandler :
 			return new Response(Notifications, 400, "Impossível atualizar fornecedor!");
 		await _transactionRepository.BeginTransactionAsync();
 		try {
-			await _repository.UpdateAsync(supplier);
+			try {
+				await _repository.UpdateAsync(supplier);
+			}
+			catch {
+				return new Response(null, 500, "Não foi atualizar criar fornecedor!");
+			}
 			await _transactionRepository.CommitAsync();
 		}
 		catch (Exception) {
@@ -81,7 +90,12 @@ public class SupplierHandler :
 		if (supplier is null)
 			return new Response(null, 400, "Impossível encontrar fornecedor!");
 
-		await _repository.DeleteAsync(supplier);
+		try {
+			await _repository.DeleteAsync(supplier);
+		}
+		catch {
+			return new Response(null, 500, "Não foi possível remover fornecedor!");
+		}
 		return new Response(null, 200, "Fornecedor removido com sucesso!");
 	}
 
