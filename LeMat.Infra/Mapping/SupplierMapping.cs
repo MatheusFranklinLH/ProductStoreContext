@@ -14,6 +14,12 @@ public class SupplierMapping : IEntityTypeConfiguration<Supplier> {
 		builder.Property(x => x.Id)
 			.HasColumnName("id");
 
+		builder.Property(x => x.CreatedAt)
+			.HasColumnName("created_at");
+
+		builder.Property(x => x.ModifiedAt)
+			.HasColumnName("modified_at");
+
 		builder.Property(x => x.Name)
 			.IsRequired(true)
 			.HasColumnType("VARCHAR(100)")

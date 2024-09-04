@@ -5,8 +5,13 @@ namespace LeMat.Shared.Entities;
 public abstract class Entity : Notifiable<Notification>, IEquatable<Entity> {
 	public Entity() {
 		Id = 0;
+		DateTime now = DateTime.UtcNow;
+		CreatedAt = now;
+		ModifiedAt = now;
 	}
 	public int Id { get; set; }
+	public DateTime CreatedAt { get; set; }
+	public DateTime ModifiedAt { get; set; }
 
 	public bool Equals(Entity other) {
 		return Id == other.Id;

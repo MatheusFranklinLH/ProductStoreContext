@@ -20,10 +20,7 @@ public class Supplier : ContactEntity {
 		Name = name;
 		CompanyReason = companyReason;
 
-		AddNotifications(new Contract<Supplier>()
-			.Requires()
-			.IsGreaterThan(Name, 3, "Supplier.Name", "Nome deve ter mais do que 3 caracteres")
-		);
+		Validate();
 	}
 	public string Name { get; private set; }
 	public string CompanyReason { get; private set; }
@@ -31,8 +28,12 @@ public class Supplier : ContactEntity {
 	public void Update(string name, string companyReason, Telephone telephone, Email email, Address address, Document document) {
 		Name = name;
 		CompanyReason = companyReason;
+		ModifiedAt = DateTime.UtcNow;
 		UpdateContact(telephone, email, address, document);
+		Validate();
+	}
 
+	private void Validate() {
 		AddNotifications(new Contract<Supplier>()
 			.Requires()
 			.IsGreaterThan(Name, 3, "Supplier.Name", "Nome deve ter mais do que 3 caracteres")
