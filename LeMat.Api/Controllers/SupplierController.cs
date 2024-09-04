@@ -3,6 +3,7 @@ using LeMat.Domain.Handlers;
 using LeMat.Domain.Repositories;
 using LeMat.Domain.Requests;
 using LeMat.Shared.Requests;
+using LeMat.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeMat.Api.Controllers;

@@ -1,6 +1,7 @@
 using LeMat.Domain.Entities;
 using LeMat.Domain.Queries;
 using LeMat.Domain.Repositories;
+using LeMat.Domain.Responses;
 using LeMat.Domain.ValueObjects;
 using LeMat.Infra.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -34,8 +35,8 @@ public class SupplierRepository : ISupplierRepository {
 			.AnyAsync(x => x.Document.Number == document.Number && x.Document.Type == document.Type);
 	}
 
-	public async Task<List<Supplier>> GetAllAsync() {
-		return await _context.Suppliers.AsNoTracking().ToListAsync();
+	public async Task<List<SupplierResponse>> GetAllAsync() {
+		return await _context.Suppliers.AsNoTracking().MapToSupplierResponse().ToListAsync();
 	}
 
 	public async Task<Supplier> GetByIdAsync(int id) {

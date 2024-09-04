@@ -1,6 +1,7 @@
 using LeMat.Domain.Entities;
 using LeMat.Domain.Enums;
 using LeMat.Domain.Repositories;
+using LeMat.Domain.Responses;
 using LeMat.Domain.ValueObjects;
 
 namespace LeMat.Tests.Mocks;
@@ -25,8 +26,8 @@ public class FakeSupplierRepository : ISupplierRepository {
 		return Task.FromResult(false);
 	}
 
-	public Task<List<Supplier>> GetAllAsync() {
-		return Task.FromResult(new List<Supplier>());
+	public Task<List<SupplierResponse>> GetAllAsync() {
+		return Task.FromResult(new List<SupplierResponse>());
 	}
 
 	public Task<Supplier> GetByIdAsync(int id) {
