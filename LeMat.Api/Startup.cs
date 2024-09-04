@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
 using LeMat.Domain.Handlers;
 using LeMat.Domain.Repositories;
 using LeMat.Infra.Contexts;
 using LeMat.Infra.Repositories;
+using Microsoft.EntityFrameworkCore;
 namespace LeMat.Api;
 public class Startup {
 	public Startup(IConfiguration configuration, IWebHostEnvironment env) {
@@ -27,6 +27,7 @@ public class Startup {
 
 		services.AddScoped<ISupplierRepository, SupplierRepository>();
 		services.AddScoped<SupplierHandler, SupplierHandler>();
+		services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 		// services
 		//    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

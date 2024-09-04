@@ -15,9 +15,11 @@ public class SupplierHandler :
 	IHandler<UpdateSupplierCommand>,
 	IHandler<DeleteIdCommand> {
 	private readonly ISupplierRepository _repository;
+	private readonly ITransactionRepository _transactionRepository;
 
-	public SupplierHandler(ISupplierRepository repository) {
+	public SupplierHandler(ISupplierRepository repository, ITransactionRepository transactionRepository) {
 		_repository = repository;
+		_transactionRepository = transactionRepository;
 	}
 
 	public async Task<ICommandResult> Handle(CreateSupplierCommand command) {
@@ -60,8 +62,15 @@ public class SupplierHandler :
 
 		if (!IsValid)
 			return new CommandResult(Notifications, 400, "Impossível atualizar fornecedor!");
-
-		await _repository.UpdateAsync(supplier);
+		await _transactionRepository.BeginTransactionAsync();
+		try {
+			await _repository.UpdateAsync(supplier);
+			await _transactionRepository.CommitAsync();
+		}
+		catch (Exception) {
+			await _transactionRepository.RollbackAsync();
+			throw;
+		}
 
 		return new CommandResult(supplier.Id, 200, "Fornecedor atualizado com sucesso!");
 	}
