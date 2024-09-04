@@ -12,8 +12,8 @@ public class CommandResult : ICommandResult {
 		Data = data;
 	}
 
-	public string Message { get; set; }
-	public object Data { get; set; }
+	public string Message { get; private set; }
+	public object Data { get; private set; }
 	[JsonIgnore]
 	public bool IsSuccess => _code is >= 200 and <= 299;
 }
