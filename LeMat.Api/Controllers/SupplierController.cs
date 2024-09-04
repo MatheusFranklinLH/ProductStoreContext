@@ -23,25 +23,25 @@ public class SupplierController : ControllerBase {
 
 	[HttpPost]
 	public async Task<IResponse> Create(
-		[FromBody] CreateSupplierRequest Request,
+		[FromBody] CreateSupplierRequest request,
 		[FromServices] SupplierHandler handler
 	) {
-		return (Response)await handler.Handle(Request);
+		return (Response)await handler.Handle(request);
 	}
 
 	[HttpPut]
 	public async Task<IResponse> Update(
-		[FromBody] UpdateSupplierRequest Request,
+		[FromBody] UpdateSupplierRequest request,
 		[FromServices] SupplierHandler handler
 	) {
-		return (Response)await handler.Handle(Request);
+		return (Response)await handler.Handle(request);
 	}
 
 	[HttpDelete]
 	public async Task<IResponse> Delete(
-		[FromBody] DeleteIdRequest Request,
+		[FromBody] DeleteIdRequest request,
 		[FromServices] SupplierHandler handler
 	) {
-		return (Response)await handler.Handle(Request);
+		return (Response)await handler.Handle(request);
 	}
 }
