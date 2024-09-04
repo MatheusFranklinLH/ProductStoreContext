@@ -1,9 +1,9 @@
 using Flunt.Notifications;
-using LeMat.Shared.Commands;
+using LeMat.Shared.Requests;
 
-namespace LeMat.Domain.Commands;
+namespace LeMat.Domain.Requests;
 
-public class CreateClientCommand : Notifiable<Notification>, ICommand {
+public class CreateClientRequest : Notifiable<Notification>, IRequest {
 	public string FirstName { get; set; }
 	public string LastName { get; set; }
 	public string Telephone { get; set; }

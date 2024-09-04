@@ -1,19 +1,20 @@
 using Flunt.Notifications;
-using LeMat.Domain.Commands;
 using LeMat.Domain.Entities;
 using LeMat.Domain.Enums;
 using LeMat.Domain.Repositories;
+using LeMat.Domain.Requests;
 using LeMat.Domain.ValueObjects;
-using LeMat.Shared.Commands;
 using LeMat.Shared.Handlers;
+using LeMat.Shared.Requests;
+using LeMat.Shared.Responses;
 
 namespace LeMat.Domain.Handlers;
 
 public class SupplierHandler :
 	Notifiable<Notification>,
-	IHandler<CreateSupplierCommand>,
-	IHandler<UpdateSupplierCommand>,
-	IHandler<DeleteIdCommand> {
+	IHandler<CreateSupplierRequest>,
+	IHandler<UpdateSupplierRequest>,
+	IHandler<DeleteIdRequest> {
 	private readonly ISupplierRepository _repository;
 	private readonly ITransactionRepository _transactionRepository;
 
@@ -22,46 +23,46 @@ public class SupplierHandler :
 		_transactionRepository = transactionRepository;
 	}
 
-	public async Task<ICommandResult> Handle(CreateSupplierCommand command) {
+	public async Task<IResponse> Handle(CreateSupplierRequest request) {
 		// Fail Fast Validate
-		command.Validate();
-		if (!command.IsValid)
-			return new CommandResult(command.Notifications, 400, "Parâmetros de entrada inválidos!");
+		request.Validate();
+		if (!request.IsValid)
+			return new Response(request.Notifications, 400, "Parâmetros de entrada inválidos!");
 
-		Telephone telephone = GetTelephone(command.Telephone);
-		Email email = GetEmail(command.Email);
-		Address address = GetAddress(command.Street, command.Number, command.Neighborhood, command.City, command.State, command.Country, command.ZipCode);
-		Document document = await GetDocumentAsync(command.Document, command.DocumentIsCPF);
+		Telephone telephone = GetTelephone(request.Telephone);
+		Email email = GetEmail(request.Email);
+		Address address = GetAddress(request.Street, request.Number, request.Neighborhood, request.City, request.State, request.Country, request.ZipCode);
+		Document document = await GetDocumentAsync(request.Document, request.DocumentIsCPF);
 
-		var supplier = new Supplier(command.Name, command.CompanyReason, telephone, email, address, document);
+		var supplier = new Supplier(request.Name, request.CompanyReason, telephone, email, address, document);
 		AddNotifications(supplier);
 
 		if (!IsValid)
-			return new CommandResult(Notifications, 400, "Impossível criar fornecedor!");
+			return new Response(Notifications, 400, "Impossível criar fornecedor!");
 
 		await _repository.CreateAsync(supplier);
 
-		return new CommandResult(supplier.Id, 200, "Fornecedor criado com sucesso!");
+		return new Response(supplier.Id, 200, "Fornecedor criado com sucesso!");
 	}
 
-	public async Task<ICommandResult> Handle(UpdateSupplierCommand command) {
-		command.Validate();
-		if (!command.IsValid)
-			return new CommandResult(command.Notifications, 400, "Parâmetros de entrada inválidos!");
+	public async Task<IResponse> Handle(UpdateSupplierRequest request) {
+		request.Validate();
+		if (!request.IsValid)
+			return new Response(request.Notifications, 400, "Parâmetros de entrada inválidos!");
 
-		var supplier = await _repository.GetByIdAsync(command.Id);
+		var supplier = await _repository.GetByIdAsync(request.Id);
 		if (supplier is null)
-			return new CommandResult(null, 400, "Impossível encontrar fornecedor!");
+			return new Response(null, 400, "Impossível encontrar fornecedor!");
 
-		Telephone telephone = GetTelephone(command.Telephone);
-		Email email = GetEmail(command.Email);
-		Address address = GetAddress(command.Street, command.Number, command.Neighborhood, command.City, command.State, command.Country, command.ZipCode);
-		Document document = await GetDocumentAsync(command.Document, command.DocumentIsCPF);
-		supplier.Update(command.Name, command.CompanyReason, telephone, email, address, document);
+		Telephone telephone = GetTelephone(request.Telephone);
+		Email email = GetEmail(request.Email);
+		Address address = GetAddress(request.Street, request.Number, request.Neighborhood, request.City, request.State, request.Country, request.ZipCode);
+		Document document = await GetDocumentAsync(request.Document, request.DocumentIsCPF);
+		supplier.Update(request.Name, request.CompanyReason, telephone, email, address, document);
 		AddNotifications(supplier);
 
 		if (!IsValid)
-			return new CommandResult(Notifications, 400, "Impossível atualizar fornecedor!");
+			return new Response(Notifications, 400, "Impossível atualizar fornecedor!");
 		await _transactionRepository.BeginTransactionAsync();
 		try {
 			await _repository.UpdateAsync(supplier);
@@ -72,16 +73,16 @@ public class SupplierHandler :
 			throw;
 		}
 
-		return new CommandResult(supplier.Id, 200, "Fornecedor atualizado com sucesso!");
+		return new Response(supplier.Id, 200, "Fornecedor atualizado com sucesso!");
 	}
 
-	public async Task<ICommandResult> Handle(DeleteIdCommand command) {
-		var supplier = await _repository.GetByIdAsync(command.Id);
+	public async Task<IResponse> Handle(DeleteIdRequest request) {
+		var supplier = await _repository.GetByIdAsync(request.Id);
 		if (supplier is null)
-			return new CommandResult(null, 400, "Impossível encontrar fornecedor!");
+			return new Response(null, 400, "Impossível encontrar fornecedor!");
 
 		await _repository.DeleteAsync(supplier);
-		return new CommandResult(null, 200, "Fornecedor removido com sucesso!");
+		return new Response(null, 200, "Fornecedor removido com sucesso!");
 	}
 
 	private Telephone GetTelephone(string number) {
@@ -114,7 +115,7 @@ public class SupplierHandler :
 		var documentType = documentIsCPF ? EDocumentType.CPF : EDocumentType.CNPJ;
 		var doc = new Document(document, documentType);
 		if (await _repository.DocumentExistsAsync(doc))
-			AddNotification("CreateSupplierCommand.Document", "Este Documento já foi cadastrado por outro fornecedor");
+			AddNotification("CreateSupplierRequest.Document", "Este Documento já foi cadastrado por outro fornecedor");
 		AddNotifications(doc);
 		return doc;
 

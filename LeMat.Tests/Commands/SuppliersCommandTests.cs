@@ -1,25 +1,25 @@
-using LeMat.Domain.Commands;
+using LeMat.Domain.Requests;
 
 namespace LeMat.Tests;
 
 [TestClass]
-public class SuppliersCommandTests {
+public class SuppliersRequestTests {
 
 	[TestMethod]
 	public void CreateShouldReturnErrorWhenNameIsInvalid() {
-		var command = new CreateSupplierCommand();
-		command.Name = "";
+		var request = new CreateSupplierRequest();
+		request.Name = "";
 
-		command.Validate();
-		Assert.AreEqual(false, command.IsValid);
+		request.Validate();
+		Assert.AreEqual(false, request.IsValid);
 	}
 
 	[TestMethod]
 	public void UpdateShouldReturnErrorWhenNameIsInvalid() {
-		var command = new UpdateSupplierCommand();
-		command.Name = "";
+		var request = new UpdateSupplierRequest();
+		request.Name = "";
 
-		command.Validate();
-		Assert.AreEqual(false, command.IsValid);
+		request.Validate();
+		Assert.AreEqual(false, request.IsValid);
 	}
 }

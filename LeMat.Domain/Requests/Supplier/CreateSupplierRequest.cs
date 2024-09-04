@@ -1,11 +1,10 @@
 using Flunt.Notifications;
 using Flunt.Validations;
-using LeMat.Shared.Commands;
+using LeMat.Shared.Requests;
 
-namespace LeMat.Domain.Commands;
+namespace LeMat.Domain.Requests;
 
-public class UpdateSupplierCommand : Notifiable<Notification>, ICommand {
-	public int Id { get; set; }
+public class CreateSupplierRequest : Notifiable<Notification>, IRequest {
 	public string Name { get; set; }
 	public string CompanyReason { get; set; }
 	public string Telephone { get; set; }
@@ -20,7 +19,7 @@ public class UpdateSupplierCommand : Notifiable<Notification>, ICommand {
 	public string Country { get; set; }
 	public string ZipCode { get; set; }
 	public void Validate() {
-		AddNotifications(new Contract<UpdateSupplierCommand>()
+		AddNotifications(new Contract<CreateSupplierRequest>()
 			.Requires()
 			.IsGreaterThan(Name, 3, "Name", "Nome deve conter no mínimo 3 caracteres")
 		);

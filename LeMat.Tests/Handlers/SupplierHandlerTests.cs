@@ -1,5 +1,5 @@
-using LeMat.Domain.Commands;
 using LeMat.Domain.Handlers;
+using LeMat.Domain.Requests;
 using LeMat.Tests.Mocks;
 
 namespace LeMat.Tests;
@@ -8,8 +8,8 @@ namespace LeMat.Tests;
 public class SupplierHandlerTests {
 	[TestMethod]
 	public async Task CreateShouldReturnErrorWhenDocumentExists() {
-		var handler = new SupplierHandler(new FakeSupplierRepository());
-		var command = new CreateSupplierCommand() {
+		var handler = new SupplierHandler(new FakeSupplierRepository(), new FakeTransactionRepository());
+		var request = new CreateSupplierRequest() {
 			Name = "Colchões S/A",
 			CompanyReason = "Colchões",
 			Telephone = "38999999999",
@@ -25,14 +25,14 @@ public class SupplierHandlerTests {
 			ZipCode = "12312312"
 		};
 
-		await handler.Handle(command);
+		await handler.Handle(request);
 		Assert.AreEqual(false, handler.IsValid);
 	}
 
 	[TestMethod]
 	public async Task CreateShouldReturnSuccessWhenDocumentNotExists() {
-		var handler = new SupplierHandler(new FakeSupplierRepository());
-		var command = new CreateSupplierCommand() {
+		var handler = new SupplierHandler(new FakeSupplierRepository(), new FakeTransactionRepository());
+		var request = new CreateSupplierRequest() {
 			Name = "Colchões S/A",
 			CompanyReason = "Colchões",
 			Telephone = "38999999999",
@@ -48,14 +48,14 @@ public class SupplierHandlerTests {
 			ZipCode = "12312312"
 		};
 
-		await handler.Handle(command);
+		await handler.Handle(request);
 		Assert.AreEqual(true, handler.IsValid);
 	}
 
 	[TestMethod]
 	public async Task UpdateShouldReturnErrorWhenDocumentExists() {
-		var handler = new SupplierHandler(new FakeSupplierRepository());
-		var command = new UpdateSupplierCommand() {
+		var handler = new SupplierHandler(new FakeSupplierRepository(), new FakeTransactionRepository());
+		var request = new UpdateSupplierRequest() {
 			Name = "Colchões S/A",
 			CompanyReason = "Colchões",
 			Telephone = "38999999999",
@@ -71,14 +71,14 @@ public class SupplierHandlerTests {
 			ZipCode = "12312312"
 		};
 
-		await handler.Handle(command);
+		await handler.Handle(request);
 		Assert.AreEqual(false, handler.IsValid);
 	}
 
 	[TestMethod]
 	public async Task UpdateShouldReturnSuccessWhenDocumentNotExists() {
-		var handler = new SupplierHandler(new FakeSupplierRepository());
-		var command = new UpdateSupplierCommand() {
+		var handler = new SupplierHandler(new FakeSupplierRepository(), new FakeTransactionRepository());
+		var request = new UpdateSupplierRequest() {
 			Name = "Colchões S/A",
 			CompanyReason = "Colchões",
 			Telephone = "38999999999",
@@ -94,7 +94,7 @@ public class SupplierHandlerTests {
 			ZipCode = "12312312"
 		};
 
-		await handler.Handle(command);
+		await handler.Handle(request);
 		Assert.AreEqual(true, handler.IsValid);
 	}
 }

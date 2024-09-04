@@ -1,12 +1,12 @@
 using System.Text.Json.Serialization;
 
-namespace LeMat.Shared.Commands;
+namespace LeMat.Shared.Responses;
 
-public class CommandResult : ICommandResult {
+public class Response : IResponse {
 	private int _code = Configuration.DefaultStatusCode;
-	public CommandResult() { }
+	public Response() { }
 
-	public CommandResult(object data, int code = Configuration.DefaultStatusCode, string message = null) {
+	public Response(object data, int code = Configuration.DefaultStatusCode, string message = null) {
 		_code = code;
 		Message = message;
 		Data = data;

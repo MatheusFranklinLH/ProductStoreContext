@@ -1,8 +1,8 @@
-using LeMat.Domain.Commands;
 using LeMat.Domain.Entities;
 using LeMat.Domain.Handlers;
 using LeMat.Domain.Repositories;
-using LeMat.Shared.Commands;
+using LeMat.Domain.Requests;
+using LeMat.Shared.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeMat.Api.Controllers;
@@ -14,33 +14,33 @@ public class SupplierController : ControllerBase {
 	public SupplierController() { }
 
 	[HttpGet]
-	public async Task<ICommandResult> Get([FromServices] ISupplierRepository repository, int? id) {
+	public async Task<IResponse> Get([FromServices] ISupplierRepository repository, int? id) {
 		if (id is null)
-			return new CommandResult(await repository.GetAllAsync());
-		return new CommandResult(await repository.GetByIdAsync(id.Value));
+			return new Response(await repository.GetAllAsync());
+		return new Response(await repository.GetByIdAsync(id.Value));
 	}
 
 	[HttpPost]
-	public async Task<ICommandResult> Create(
-		[FromBody] CreateSupplierCommand command,
+	public async Task<IResponse> Create(
+		[FromBody] CreateSupplierRequest Request,
 		[FromServices] SupplierHandler handler
 	) {
-		return (CommandResult)await handler.Handle(command);
+		return (Response)await handler.Handle(Request);
 	}
 
 	[HttpPut]
-	public async Task<ICommandResult> Update(
-		[FromBody] UpdateSupplierCommand command,
+	public async Task<IResponse> Update(
+		[FromBody] UpdateSupplierRequest Request,
 		[FromServices] SupplierHandler handler
 	) {
-		return (CommandResult)await handler.Handle(command);
+		return (Response)await handler.Handle(Request);
 	}
 
 	[HttpDelete]
-	public async Task<ICommandResult> Delete(
-		[FromBody] DeleteIdCommand command,
+	public async Task<IResponse> Delete(
+		[FromBody] DeleteIdRequest Request,
 		[FromServices] SupplierHandler handler
 	) {
-		return (CommandResult)await handler.Handle(command);
+		return (Response)await handler.Handle(Request);
 	}
 }
