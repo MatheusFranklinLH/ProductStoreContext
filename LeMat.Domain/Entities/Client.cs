@@ -1,6 +1,5 @@
 using Flunt.Validations;
 using LeMat.Domain.ValueObjects;
-using LeMat.Shared.Entities;
 
 namespace LeMat.Domain.Entities;
 
@@ -9,7 +8,11 @@ public class Client : ContactEntity {
 		: base(telephone, email, address, document) {
 		Name = name;
 
-		AddNotifications(Name);
+		AddNotifications(Name, new Contract<Client>()
+			.Requires()
+			.IsNotNull(Name, "Client.Name", "Nome do cliente não pode ser nulo!")
+			.IsNotNull(Document, "Client.Document", "Documento do cliente não pode ser nulo!")
+		);
 	}
 
 	public Name Name { get; private set; }

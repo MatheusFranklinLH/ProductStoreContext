@@ -1,34 +1,35 @@
 using Flunt.Validations;
+using LeMat.Domain.Enums;
 using LeMat.Shared.Entities;
 
 namespace LeMat.Domain.Entities;
 
 public class Sales : Entity {
+
 	private readonly IList<SalesItem> _salesItems;
-	public Sales(decimal originalPrice, decimal discount, decimal price, DateTime date, Client client) {
-		OriginalPrice = originalPrice;
-		Discount = discount;
-		Price = price;
+	public Sales(DateTime date, EPaymentType paymentType, Client client, DateTime? deliveryDate, List<SalesItem> salesItems) {
 		Date = date;
+		PaymentType = paymentType;
 		Client = client;
-		_salesItems = new List<SalesItem>();
+		ClientId = client.Id;
+		DeliveryDate = deliveryDate;
+		_salesItems = salesItems ?? new();
 
 		AddNotifications(Client, new Contract<Sales>()
 			.Requires()
-			.IsGreaterThan(OriginalPrice, 0, "Sales.OriginalPrice", "Valor original da venda deve ser maior que 0")
-			.IsGreaterThan(Price, 0, "Sales.Price", "Valor da venda deve ser maior que 0")
-			.IsGreaterOrEqualsThan(Discount, 0, "Sales.Discount", "Valor do desconto deve ser maior ou igual a 0")
-			.IsLowerOrEqualsThan(Date, DateTime.UtcNow, "Sales.Date", "Data da venda deve ser antes de agora")
 			.IsNotNull(Client, "Sales.Client", "Cliente não pode ser nulo")
 		);
+
+		foreach (var salesItem in _salesItems)
+			AddNotifications(salesItem);
 	}
 
-	public decimal OriginalPrice { get; private set; }
-	public decimal Discount { get; private set; }
-	public decimal Price { get; private set; }
+	public int ClientId { get; private set; }
+	public EPaymentType PaymentType { get; private set; }
 	public DateTime Date { get; private set; }
-	public Client Client { get; private set; }
-	public IReadOnlyCollection<SalesItem> SalesItems { get => _salesItems.ToArray(); }
+	public DateTime? DeliveryDate { get; private set; }
+	public virtual Client Client { get; private set; }
+	public virtual ICollection<SalesItem> SalesItems { get; private set; }
 
 	public void AddSalesItem(SalesItem item) {
 		if (item is null) {
@@ -38,5 +39,12 @@ public class Sales : Entity {
 
 		AddNotifications(item);
 		_salesItems.Add(item);
+	}
+
+	public decimal GetTotalPrice() {
+		decimal totalPrice = 0;
+		foreach (var salesItem in _salesItems)
+			totalPrice += salesItem.Quantity * salesItem.PerUnitPrice;
+		return totalPrice;
 	}
 }
