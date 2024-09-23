@@ -4,6 +4,7 @@ using LeMat.Shared.Entities;
 namespace LeMat.Domain.Entities;
 
 public class StockEntryItem : Entity {
+	private StockEntryItem() { }
 	public StockEntryItem(int quantity, decimal costPerUnit, int productId, int stockEntryId) {
 		Quantity = quantity;
 		CostPerUnit = costPerUnit;

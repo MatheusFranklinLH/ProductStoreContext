@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="flunt" Version="2.0.5" />
+	 <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
 </Project>

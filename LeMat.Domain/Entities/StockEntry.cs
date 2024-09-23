@@ -5,6 +5,7 @@ namespace LeMat.Domain.Entities;
 
 public class StockEntry : Entity {
 	private IList<StockEntryItem> _stockEntryItems;
+	private StockEntry() { }
 	public StockEntry(DateTime arrivalDate, List<StockEntryItem> items) {
 		ArrivalDate = arrivalDate;
 		_stockEntryItems = items ?? new();

@@ -4,6 +4,7 @@ using LeMat.Domain.ValueObjects;
 namespace LeMat.Domain.Entities;
 
 public class Client : ContactEntity {
+	private Client() { }
 	public Client(Name name, Telephone telephone, Email email, Address address, Document document)
 		: base(telephone, email, address, document) {
 		Name = name;

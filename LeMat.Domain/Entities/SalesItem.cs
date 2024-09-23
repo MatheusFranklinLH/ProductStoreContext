@@ -4,6 +4,7 @@ using LeMat.Shared.Entities;
 namespace LeMat.Domain.Entities;
 
 public class SalesItem : Entity {
+	private SalesItem() { }
 	public SalesItem(Product product, int quantity, decimal perUnitPrice) {
 		Product = product;
 		Quantity = quantity;

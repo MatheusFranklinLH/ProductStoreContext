@@ -24,6 +24,7 @@ public class Supplier : ContactEntity {
 	}
 	public string Name { get; private set; }
 	public string CompanyReason { get; private set; }
+	public virtual ICollection<Product> Products { get; private set; } = new HashSet<Product>();
 
 	public void Update(string name, string companyReason, Telephone telephone, Email email, Address address, Document document) {
 		Name = name;

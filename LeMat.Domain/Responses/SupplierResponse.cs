@@ -3,7 +3,7 @@ using LeMat.Domain.ValueObjects;
 
 namespace LeMat.Domain.Responses;
 
-public record SupplierResponse(int Id, string Name, string CompanyReason, Telephone telephone, Email email, Address address, Document document);
+public record SupplierResponse(int Id, string Name, string CompanyReason, Telephone Telephone, Email Email, Address Address, Document Document);
 
 public static partial class ResponseExtensions {
 	public static IQueryable<SupplierResponse> MapToSupplierResponse(this IQueryable<Supplier> suppliers) {

@@ -15,10 +15,12 @@ public class SupplierMapping : IEntityTypeConfiguration<Supplier> {
 			.HasColumnName("id");
 
 		builder.Property(x => x.CreatedAt)
-			.HasColumnName("created_at");
+			.HasColumnName("created_at")
+			.HasDefaultValueSql("CURRENT_TIMESTAMP");
 
 		builder.Property(x => x.ModifiedAt)
-			.HasColumnName("modified_at");
+			.HasColumnName("modified_at")
+			.HasDefaultValueSql("CURRENT_TIMESTAMP");
 
 		builder.Property(x => x.Name)
 			.IsRequired(true)

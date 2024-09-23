@@ -3,6 +3,7 @@ using LeMat.Domain.Repositories;
 using LeMat.Infra.Contexts;
 using LeMat.Infra.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 namespace LeMat.Api;
 public class Startup {
 	public Startup(IConfiguration configuration, IWebHostEnvironment env) {
@@ -27,6 +28,8 @@ public class Startup {
 
 		services.AddScoped<ISupplierRepository, SupplierRepository>();
 		services.AddScoped<SupplierHandler, SupplierHandler>();
+		services.AddTransient<IProductRepository, ProductRepository>();
+		services.AddTransient<ProductHandler, ProductHandler>();
 		services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 		// services
@@ -41,11 +44,20 @@ public class Startup {
 		// 		   ValidateLifetime = true
 		// 	   };
 		//    });
+
+		services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {
+			Title = "LeMat",
+			Version = "v1",
+			Description = "",
+		}));
 	}
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-		if (env.IsDevelopment())
+		if (env.IsDevelopment()) {
 			app.UseDeveloperExceptionPage();
+			app.UseSwagger();
+			app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LeMat"));
+		}
 
 		app.UseHttpsRedirection();
 

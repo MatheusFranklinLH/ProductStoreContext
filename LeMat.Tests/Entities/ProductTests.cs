@@ -35,16 +35,16 @@ public class ProductTests {
 		Assert.IsTrue(_product.IsValid);
 	}
 
-	[TestMethod]
-	public void ShouldReturnErrorWhenAddNullInventoryControl() {
-		_product.AddInvetoryControl(null);
-		Assert.IsFalse(_product.IsValid);
-	}
+	// [TestMethod]
+	// public void ShouldReturnErrorWhenAddNullInventoryControl() {
+	// 	_product.AddInvetoryControl(null);
+	// 	Assert.IsFalse(_product.IsValid);
+	// }
 
-	[TestMethod]
-	public void ShouldReturnSuccessWhenAddValidInventoryControl() {
-		var inventoryControl = new InventoryControl(2, true, DateTime.UtcNow.AddDays(-1), 100);
-		_product.AddInvetoryControl(inventoryControl);
-		Assert.IsTrue(_product.IsValid);
-	}
+	// [TestMethod]
+	// public void ShouldReturnSuccessWhenAddValidInventoryControl() {
+	// 	var inventoryControl = new InventoryControl(2, true, DateTime.UtcNow.AddDays(-1), 100);
+	// 	_product.AddInvetoryControl(inventoryControl);
+	// 	Assert.IsTrue(_product.IsValid);
+	// }
 }

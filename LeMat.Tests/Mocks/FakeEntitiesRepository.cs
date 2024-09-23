@@ -21,12 +21,12 @@ public class FakeEntitiesRepository {
 
 	public Product GetValidProduct() {
 		Supplier supplier = new("Fornecedor 1", "Fornecedor 1 S/A", _telephone, _email, _address, _document);
-		return new("Produto 1", 100, supplier);
+		return new Product("Produto 1", 1000, 2, null, supplier);
 	}
 
 	public Sales GetValidSales() {
 		Client client = new(_name, _telephone, _email, _address, _document);
-		return new(200, 20, 180, DateTime.UtcNow.AddDays(-1), client);
+		return new Sales(DateTime.UtcNow, EPaymentType.CreditCard, client, null, new());
 	}
 
 	public SalesItem GetValidSalesItem() {

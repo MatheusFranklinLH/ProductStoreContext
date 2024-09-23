@@ -5,7 +5,7 @@ using LeMat.Shared.Entities;
 namespace LeMat.Domain.Entities;
 
 public class Sales : Entity {
-
+	private Sales() { }
 	private readonly IList<SalesItem> _salesItems;
 	public Sales(DateTime date, EPaymentType paymentType, Client client, DateTime? deliveryDate, List<SalesItem> salesItems) {
 		Date = date;
