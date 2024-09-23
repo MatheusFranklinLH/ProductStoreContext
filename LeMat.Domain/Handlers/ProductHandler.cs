@@ -17,13 +17,11 @@ public class ProductHandler :
 	IHandler<UpdateProductRequest>,
 	IHandler<DeleteIdRequest> {
 	private readonly IProductRepository _repository;
-	private readonly ISupplierRepository _supplierRepository;
 	private readonly ITransactionRepository _transactionRepository;
 
-	public ProductHandler(IProductRepository repository, ITransactionRepository transactionRepository, ISupplierRepository supplierRepository) {
+	public ProductHandler(IProductRepository repository, ITransactionRepository transactionRepository) {
 		_repository = repository;
 		_transactionRepository = transactionRepository;
-		_supplierRepository = supplierRepository;
 	}
 
 	public async Task<IResponse> Handle(CreateProductRequest request) {
