@@ -35,4 +35,20 @@ public class ProductRepository : IProductRepository {
 	public async Task<Product> GetByIdAsync(int id) {
 		return await _context.Products.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 	}
+
+	public async Task<Product> GetByIdWithImagesAsync(int id) {
+		return await _context.Products.AsNoTracking()
+			.Include(x => x.Images)
+			.FirstOrDefaultAsync(x => x.Id == id);
+	}
+
+	public async Task DeleteManyImagesAsync(List<Image> images) {
+		_context.Images.RemoveRange(images.ToArray());
+		await _context.SaveChangesAsync();
+	}
+
+	public async Task InsertManyImagesAsync(List<Image> images) {
+		await _context.Images.AddRangeAsync(images);
+		await _context.SaveChangesAsync();
+	}
 }

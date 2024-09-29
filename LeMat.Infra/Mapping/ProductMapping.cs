@@ -32,10 +32,6 @@ public class ProductMapping : IEntityTypeConfiguration<Product> {
 		builder.Property(x => x.MaximumDiscountPercentage)
 			.HasColumnName("maximum_discount_percentage");
 
-		builder.Property(x => x.ImagePath)
-			.HasColumnType("VARCHAR(100)")
-			.HasColumnName("image_path");
-
 		builder.Property(x => x.SupplierId)
 			.HasColumnName("supplier_id");
 

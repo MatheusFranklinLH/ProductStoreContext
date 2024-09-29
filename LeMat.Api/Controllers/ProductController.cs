@@ -1,4 +1,3 @@
-using LeMat.Domain.Entities;
 using LeMat.Domain.Handlers;
 using LeMat.Domain.Repositories;
 using LeMat.Domain.Requests;
@@ -15,33 +14,55 @@ public class ProductController : ControllerBase {
 	public ProductController() { }
 
 	[HttpGet]
-	public async Task<IResponse> Get([FromServices] IProductRepository repository, int? id) {
-		if (id is null)
-			return new Response(await repository.GetAllAsync());
-		return new Response(await repository.GetByIdAsync(id.Value));
+	public async Task<IActionResult> Get([FromServices] IProductRepository repository, int? id) {
+		if (id is null) {
+			var idResponse = new Response(await repository.GetAllAsync());
+			if (idResponse.IsSuccess) return Ok(idResponse);
+			return BadRequest(idResponse);
+		}
+		var response = new Response(await repository.GetByIdAsync(id.Value));
+		if (response.IsSuccess) return Ok(response);
+		return BadRequest(response);
 	}
 
 	[HttpPost]
-	public async Task<IResponse> Create(
+	public async Task<IActionResult> Create(
 		[FromBody] CreateProductRequest request,
 		[FromServices] ProductHandler handler
 	) {
-		return (Response)await handler.Handle(request);
+		var response = (Response)await handler.Handle(request);
+		if (response.IsSuccess) return Ok(response);
+		return BadRequest(response);
 	}
 
 	[HttpPut]
-	public async Task<IResponse> Update(
+	public async Task<IActionResult> Update(
 		[FromBody] UpdateProductRequest request,
 		[FromServices] ProductHandler handler
 	) {
-		return (Response)await handler.Handle(request);
+		var response = (Response)await handler.Handle(request);
+		if (response.IsSuccess) return Ok(response);
+		return BadRequest(response);
 	}
 
 	[HttpDelete]
-	public async Task<IResponse> Delete(
+	public async Task<IActionResult> Delete(
 		[FromBody] DeleteIdRequest request,
 		[FromServices] ProductHandler handler
 	) {
-		return (Response)await handler.Handle(request);
+		var response = (Response)await handler.Handle(request);
+		if (response.IsSuccess) return Ok(response);
+		return BadRequest(response);
 	}
+
+	[HttpPost("images")]
+	public async Task<IActionResult> UploadImages(
+		[FromForm] UpdateProductImagesRequest request,
+		[FromServices] ProductHandler handler
+	) {
+		var response = (Response)await handler.Handle(request);
+		if (response.IsSuccess) return Ok(response);
+		return BadRequest(response);
+	}
+
 }

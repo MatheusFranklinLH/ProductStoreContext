@@ -5,11 +5,10 @@ namespace LeMat.Domain.Entities;
 
 public class Product : Entity {
 	private Product() { }
-	public Product(string name, decimal suggestedSellPrice, decimal maximumDiscountPercentage, string imagePath, int? supplierId) {
+	public Product(string name, decimal suggestedSellPrice, decimal maximumDiscountPercentage, int? supplierId) {
 		Name = name;
 		SuggestedSellPrice = suggestedSellPrice;
 		MaximumDiscountPercentage = maximumDiscountPercentage;
-		ImagePath = imagePath;
 		StockAvailable = 0;
 		SupplierId = supplierId;
 
@@ -19,10 +18,10 @@ public class Product : Entity {
 	public string Name { get; private set; }
 	public decimal SuggestedSellPrice { get; private set; }
 	public decimal MaximumDiscountPercentage { get; private set; }
-	public string ImagePath { get; private set; }
 	public int? SupplierId { get; private set; }
 	public int StockAvailable { get; private set; }
 	public virtual Supplier Supplier { get; private set; }
+	public virtual ICollection<Image> Images { get; private set; } = new HashSet<Image>();
 	// public virtual ICollection<StockEntry> StockEntries { get; private set; } = new HashSet<StockEntry>();
 	// public virtual ICollection<Sales> Sales { get; private set; } = new HashSet<Sales>();
 
@@ -43,11 +42,6 @@ public class Product : Entity {
 
 		StockAvailable -= quantity;
 	}
-
-	public void UpdateImagePath(string imagePath) {
-		ImagePath = imagePath;
-	}
-
 	public void Update(string name, decimal suggestedSellPrice, decimal maximumDiscountPercentage, int? supplierId) {
 		Name = name;
 		SuggestedSellPrice = suggestedSellPrice;

@@ -1,13 +1,10 @@
 using Flunt.Notifications;
 using LeMat.Domain.Entities;
-using LeMat.Domain.Enums;
 using LeMat.Domain.Repositories;
 using LeMat.Domain.Requests;
-using LeMat.Domain.ValueObjects;
 using LeMat.Shared.Handlers;
 using LeMat.Shared.Requests;
 using LeMat.Shared.Responses;
-using LeMat.Shared.Utils;
 
 namespace LeMat.Domain.Handlers;
 
@@ -15,13 +12,20 @@ public class ProductHandler :
 	Notifiable<Notification>,
 	IHandler<CreateProductRequest>,
 	IHandler<UpdateProductRequest>,
-	IHandler<DeleteIdRequest> {
+	IHandler<DeleteIdRequest>,
+	IHandler<UpdateProductImagesRequest> {
 	private readonly IProductRepository _repository;
+	private readonly IFilesRepository _filesRepository;
 	private readonly ITransactionRepository _transactionRepository;
 
-	public ProductHandler(IProductRepository repository, ITransactionRepository transactionRepository) {
+	public ProductHandler(
+		IProductRepository repository,
+		ITransactionRepository transactionRepository,
+		IFilesRepository filesRepository
+	) {
 		_repository = repository;
 		_transactionRepository = transactionRepository;
+		_filesRepository = filesRepository;
 	}
 
 	public async Task<IResponse> Handle(CreateProductRequest request) {
@@ -29,19 +33,8 @@ public class ProductHandler :
 		request.Validate();
 		if (!request.IsValid)
 			return new Response(request.Notifications, 400, "Parâmetros de entrada inválidos!");
-		string imagePath = "";
-		if (request.Image is not null)
-			try {
-				imagePath = await FileUtils.UploadFileAsync(request.Image, new() { ".jpg", ".png" });
-			}
-			catch (ArgumentException ae) {
-				return new Response(null, 500, ae.Message);
-			}
-			catch {
-				return new Response(null, 500, "Erro ao tentar salvar imagem!");
-			}
 
-		Product product = new(request.Name, request.SuggestedSellPrice, request.MaximumDiscountPercentage, imagePath, request.SupplierId);
+		Product product = new(request.Name, request.SuggestedSellPrice, request.MaximumDiscountPercentage, request.SupplierId);
 		AddNotifications(product);
 
 		if (!IsValid)
@@ -64,24 +57,6 @@ public class ProductHandler :
 		var product = await _repository.GetByIdAsync(request.Id);
 		if (product is null)
 			return new Response(null, 400, "Impossível encontrar produto!");
-
-		if (request.ImageHasBeenChanged) {
-			if (!string.IsNullOrWhiteSpace(product.ImagePath))
-				FileUtils.DeleteFile(product.ImagePath);
-			string imagePath = null;
-			if (request.Image is not null) {
-				try {
-					imagePath = await FileUtils.UploadFileAsync(request.Image, new() { ".jpg", ".png" });
-				}
-				catch (ArgumentException ae) {
-					return new Response(null, 500, ae.Message);
-				}
-				catch {
-					return new Response(null, 500, "Erro ao tentar salvar imagem!");
-				}
-			}
-			product.UpdateImagePath(imagePath);
-		}
 
 		product.Update(request.Name, request.SuggestedSellPrice, request.MaximumDiscountPercentage, request.SupplierId);
 		AddNotifications(product);
@@ -120,4 +95,51 @@ public class ProductHandler :
 		return new Response(null, 200, "Produto removido com sucesso!");
 	}
 
+	public async Task<IResponse> Handle(UpdateProductImagesRequest request) {
+		request.Validate();
+		if (!request.IsValid)
+			return new Response(request.Notifications, 400, "Parâmetros de entrada inválidos!");
+
+		var product = await _repository.GetByIdWithImagesAsync(request.ProductId);
+		if (product is null)
+			return new Response(null, 400, "Impossível encontrar produto!");
+
+		List<Image> newImages = new();
+		foreach (var imageFile in request.Images) {
+			try {
+				string newFilePath = await _filesRepository.UploadImageAsync(imageFile, new() { ".jpg", ".png" });
+				newImages.Add(new(newFilePath, request.ProductId));
+			}
+			catch (ArgumentException ae) {
+				return new Response(null, 500, ae.Message);
+			}
+			catch {
+				return new Response(null, 500, "Erro ao tentar salvar imagem!");
+			}
+		}
+
+		foreach (var oldImage in product.Images) {
+			try {
+				await _filesRepository.DeleteFileAsync(oldImage.ImagePath);
+			}
+			catch (FileNotFoundException) { }
+			catch {
+				return new Response(null, 500, "Erro ao tentar remover imagem!");
+			}
+		}
+		AddNotifications(product);
+		newImages.ForEach(x => AddNotifications(x));
+
+		if (!IsValid)
+			return new Response(Notifications, 400, "Impossível atualizar imagens do produto!");
+		try {
+			await _repository.DeleteManyImagesAsync(product.Images.ToList());
+			await _repository.InsertManyImagesAsync(newImages);
+		}
+		catch {
+			return new Response(null, 500, "Não foi atualizar criar produto!");
+		}
+
+		return new Response(null, 200, "Imagens atualizadas com sucesso!");
+	}
 }

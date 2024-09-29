@@ -16,4 +16,6 @@ public class Response : IResponse {
 	public object Data { get; private set; }
 	[JsonIgnore]
 	public bool IsSuccess => _code is >= 200 and <= 299;
+	[JsonIgnore]
+	public int Code => _code;
 }

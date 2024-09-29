@@ -9,6 +9,7 @@ public class SPContext : DbContext {
 
 	public DbSet<Supplier> Suppliers { get; set; }
 	public DbSet<Product> Products { get; set; }
+	public DbSet<Image> Images { get; set; }
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder) {
 		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

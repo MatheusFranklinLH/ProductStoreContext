@@ -1,7 +1,6 @@
 using Flunt.Notifications;
 using Flunt.Validations;
 using LeMat.Shared.Requests;
-using Microsoft.AspNetCore.Http;
 
 namespace LeMat.Domain.Requests;
 
@@ -10,8 +9,6 @@ public class UpdateProductRequest : Notifiable<Notification>, IRequest {
 	public string Name { get; set; }
 	public decimal SuggestedSellPrice { get; set; }
 	public decimal MaximumDiscountPercentage { get; set; }
-	public IFormFile Image { get; set; }
-	public bool ImageHasBeenChanged { get; set; }
 	public int? SupplierId { get; set; }
 	public void Validate() {
 		AddNotifications(new Contract<CreateSupplierRequest>()
