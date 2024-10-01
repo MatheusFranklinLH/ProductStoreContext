@@ -28,9 +28,11 @@ public class Startup {
 
 		services.AddScoped<ISupplierRepository, SupplierRepository>();
 		services.AddScoped<SupplierHandler, SupplierHandler>();
+		services.AddTransient<IProductImageRepository, ProductImageRepository>();
 		services.AddTransient<IProductRepository, ProductRepository>();
-		services.AddTransient<IFilesRepository, FilesRepository>();
 		services.AddTransient<ProductHandler, ProductHandler>();
+		services.AddTransient<ProductImageHandler, ProductImageHandler>();
+		services.AddTransient<IFilesRepository, FilesRepository>();
 		services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 		// services

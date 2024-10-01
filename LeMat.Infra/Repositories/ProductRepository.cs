@@ -1,3 +1,4 @@
+using LeMat.Domain.DTOs;
 using LeMat.Domain.Entities;
 using LeMat.Domain.Repositories;
 using LeMat.Domain.Responses;
@@ -35,20 +36,18 @@ public class ProductRepository : IProductRepository {
 	public async Task<Product> GetByIdAsync(int id) {
 		return await _context.Products.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 	}
-
-	public async Task<Product> GetByIdWithImagesAsync(int id) {
-		return await _context.Products.AsNoTracking()
-			.Include(x => x.Images)
-			.FirstOrDefaultAsync(x => x.Id == id);
+	public async Task<ProductResponse> GetProductResponseByIdAsync(int id) {
+		return await _context.Products.AsNoTracking().MapToProductResponse().FirstOrDefaultAsync(x => x.Id == id);
 	}
 
-	public async Task DeleteManyImagesAsync(List<Image> images) {
-		_context.Images.RemoveRange(images.ToArray());
-		await _context.SaveChangesAsync();
+	public async Task<ProductEditFormInfoResponse> GetProductEditFormInfoAsync() {
+		List<NameId> products = await _context.Products.AsNoTracking().MapToNameId().ToListAsync();
+		List<NameId> suppliers = await _context.Suppliers.AsNoTracking().MapToNameId().ToListAsync();
+		return new ProductEditFormInfoResponse(products, suppliers);
 	}
 
-	public async Task InsertManyImagesAsync(List<Image> images) {
-		await _context.Images.AddRangeAsync(images);
-		await _context.SaveChangesAsync();
+	public async Task<ProductCreateFormInfoResponse> GetProductCreateFormInfoAsync() {
+		List<NameId> suppliers = await _context.Suppliers.AsNoTracking().MapToNameId().ToListAsync();
+		return new ProductCreateFormInfoResponse(suppliers);
 	}
 }

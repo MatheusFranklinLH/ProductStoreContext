@@ -8,8 +8,8 @@ public interface IProductRepository {
 	Task UpdateAsync(Product product);
 	Task DeleteAsync(Product product);
 	Task<Product> GetByIdAsync(int id);
-	Task<Product> GetByIdWithImagesAsync(int id);
+	Task<ProductResponse> GetProductResponseByIdAsync(int id);
 	Task<List<ProductResponse>> GetAllAsync();
-	Task DeleteManyImagesAsync(List<Image> images);
-	Task InsertManyImagesAsync(List<Image> images);
+	Task<ProductEditFormInfoResponse> GetProductEditFormInfoAsync();
+	Task<ProductCreateFormInfoResponse> GetProductCreateFormInfoAsync();
 }
