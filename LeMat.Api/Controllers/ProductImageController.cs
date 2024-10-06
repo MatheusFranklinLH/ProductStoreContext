@@ -40,13 +40,4 @@ public class ProductImageController : ControllerBase {
 		return ResponseUtils.CreateResponse(response);
 	}
 
-	[HttpPost("many")]
-	public async Task<ActionResult<Response>> UploadManyImages(
-		[FromForm] UpdateProductImagesRequest request,
-		[FromServices] ProductImageHandler handler
-	) {
-		var response = (Response)await handler.Handle(request);
-		return ResponseUtils.CreateResponse(response);
-	}
-
 }

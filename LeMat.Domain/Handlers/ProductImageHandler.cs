@@ -12,8 +12,7 @@ namespace LeMat.Domain.Handlers;
 public class ProductImageHandler :
 	Notifiable<Notification>,
 	IHandler<UpdateProductImageRequest>,
-	IHandler<DeleteIdRequest>,
-	IHandler<UpdateProductImagesRequest> {
+	IHandler<DeleteIdRequest> {
 	private readonly IProductImageRepository _repository;
 	private readonly IFilesRepository _filesRepository;
 
@@ -43,54 +42,6 @@ public class ProductImageHandler :
 		}
 
 		return new Response(images);
-	}
-
-	public async Task<IResponse> Handle(UpdateProductImagesRequest request) {
-		request.Validate();
-		if (!request.IsValid)
-			return new Response(request.Notifications, 400, "Parâmetros de entrada inválidos!");
-
-		var product = await _repository.GetProductByIdWithImagesAsync(request.ProductId);
-		if (product is null)
-			return new Response(null, 400, "Impossível encontrar produto!");
-
-		List<Image> newImages = new();
-		foreach (var imageFile in request.Images) {
-			try {
-				string newFileName = await _filesRepository.UploadImageAsync(imageFile, new() { ".jpeg", ".jpg", ".png" });
-				newImages.Add(new(newFileName, request.ProductId));
-			}
-			catch (ArgumentException ae) {
-				return new Response(null, 500, ae.Message);
-			}
-			catch {
-				return new Response(null, 500, "Erro ao tentar salvar imagem!");
-			}
-		}
-
-		foreach (var oldImage in product.Images) {
-			try {
-				await _filesRepository.DeleteFileAsync(oldImage.ImageName);
-			}
-			catch (FileNotFoundException) { }
-			catch {
-				return new Response(null, 500, "Erro ao tentar remover imagem!");
-			}
-		}
-		AddNotifications(product);
-		newImages.ForEach(x => AddNotifications(x));
-
-		if (!IsValid)
-			return new Response(Notifications, 400, "Impossível atualizar imagens do produto!");
-		try {
-			await _repository.DeleteManyImagesAsync(product.Images.ToList());
-			await _repository.CreateManyImagesAsync(newImages);
-		}
-		catch {
-			return new Response(null, 500, "Não foi atualizar criar produto!");
-		}
-
-		return new Response(null, 200, "Imagens atualizadas com sucesso!");
 	}
 
 	public async Task<IResponse> Handle(UpdateProductImageRequest request) {

@@ -19,6 +19,7 @@ public class Image : Entity {
 		AddNotifications(new Contract<Product>()
 			.Requires()
 			.IsNotNull(ProductId, "Image.ProductId", "ID do produto não pode ser nulo")
+			.IsGreaterThan(ProductId, 0, "Image.ProductId", "ID do produto deve ser maior do que 0")
 		);
 	}
 }

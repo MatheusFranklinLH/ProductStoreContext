@@ -28,7 +28,7 @@ public class ProductController : ControllerBase {
 
 	[HttpPost]
 	public async Task<ActionResult<Response>> CreateProduct(
-		[FromBody] CreateProductRequest request,
+		[FromForm] CreateProductRequest request,
 		[FromServices] ProductHandler handler
 	) {
 		var response = (Response)await handler.Handle(request);

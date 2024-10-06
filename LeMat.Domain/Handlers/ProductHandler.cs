@@ -15,14 +15,20 @@ public class ProductHandler :
 	IHandler<UpdateProductRequest>,
 	IHandler<DeleteIdRequest> {
 	private readonly IProductRepository _repository;
+	private readonly IProductImageRepository _productImageRepository;
 	private readonly ITransactionRepository _transactionRepository;
+	private readonly IFilesRepository _filesRepository;
 
 	public ProductHandler(
 		IProductRepository repository,
-		ITransactionRepository transactionRepository
+		ITransactionRepository transactionRepository,
+		IProductImageRepository productImageRepository,
+		IFilesRepository filesRepository
 	) {
 		_repository = repository;
 		_transactionRepository = transactionRepository;
+		_productImageRepository = productImageRepository;
+		_filesRepository = filesRepository;
 	}
 
 	public async Task<IResponse> Handle(CreateProductRequest request) {
@@ -36,14 +42,42 @@ public class ProductHandler :
 
 		if (!IsValid)
 			return new Response(Notifications, 400, "Impossível criar produto!");
+		List<Image> newImages = new();
+
+		await _transactionRepository.BeginTransactionAsync();
 		try {
 			await _repository.CreateAsync(product);
+			foreach (var imageFile in request.Images) {
+				string newFileName = await _filesRepository.UploadImageAsync(imageFile, new() { ".jpeg", ".jpg", ".png" });
+				newImages.Add(new(newFileName, product.Id));
+			}
+			newImages.ForEach(x => AddNotifications(x));
+			if (!IsValid) {
+				await CreateProductRollbackAsync(newImages);
+				return new Response(Notifications, 400, "Impossível associar imagens ao produto!");
+			}
+			await _productImageRepository.CreateManyImagesAsync(newImages);
+			await _transactionRepository.CommitAsync();
 		}
-		catch {
+		catch (ArgumentException ae) {
+			await CreateProductRollbackAsync(newImages);
+			return new Response(null, 500, ae.Message);
+		}
+		catch (Exception) {
+			await CreateProductRollbackAsync(newImages);
 			return new Response(null, 500, "Não foi possível criar produto!");
 		}
-
 		return new Response(product.Id, 200, "Produto criado com sucesso!");
+	}
+
+	private async Task CreateProductRollbackAsync(List<Image> newImages) {
+		await _transactionRepository.RollbackAsync();
+		try {
+			foreach (var image in newImages) {
+				await _filesRepository.DeleteFileAsync(image.ImageName);
+			}
+		}
+		catch { }
 	}
 
 	public async Task<IResponse> Handle(UpdateProductRequest request) {
@@ -60,19 +94,12 @@ public class ProductHandler :
 
 		if (!IsValid)
 			return new Response(Notifications, 400, "Impossível atualizar produto!");
-		await _transactionRepository.BeginTransactionAsync(); // Only for example
+
 		try {
-			try {
-				await _repository.UpdateAsync(product);
-			}
-			catch {
-				return new Response(null, 500, "Não foi atualizar criar produto!");
-			}
-			await _transactionRepository.CommitAsync();
+			await _repository.UpdateAsync(product);
 		}
-		catch (Exception) {
-			await _transactionRepository.RollbackAsync();
-			throw;
+		catch {
+			return new Response(null, 500, "Não foi atualizar criar produto!");
 		}
 
 		return new Response(product.MapToProductResponse(), 200, "Produto atualizado com sucesso!");
