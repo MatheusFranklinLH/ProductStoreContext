@@ -14,7 +14,7 @@ public class CreateProductRequest : Notifiable<Notification>, IRequest {
 	public void Validate() {
 		AddNotifications(new Contract<CreateProductRequest>()
 			.Requires()
-			.IsGreaterThan(Name, 3, "Name", "Nome deve conter no mínimo 3 caracteres")
+			.IsGreaterOrEqualsThan(Name, 3, "Name", "Nome deve conter no mínimo 3 caracteres")
 			.IsGreaterThan(SuggestedSellPrice, 0, "SuggestedSellPrice", "O preço sugerido de venda deve ser maior do que 0")
 			.IsGreaterThan(MaximumDiscountPercentage, 0, "MaximumDiscountPercentage", "A porcentagem máxima de desconto deve ser maior do que 0")
 			.IsLowerThan(MaximumDiscountPercentage, 100, "MaximumDiscountPercentage", "A porcentagem máxima de desconto deve ser menor do que 100")
