@@ -18,7 +18,7 @@ public class FilesRepository : IFilesRepository {
 		var fullUploadDirectory = Path.GetFullPath(_uploadDirectory);
 
 		if (!fullFilePath.StartsWith(fullUploadDirectory, StringComparison.OrdinalIgnoreCase))
-			throw new UnauthorizedAccessException("Invalid file path");
+			throw new UnauthorizedAccessException("Caminho inválido do arquivo");
 
 		return fullFilePath;
 	}
