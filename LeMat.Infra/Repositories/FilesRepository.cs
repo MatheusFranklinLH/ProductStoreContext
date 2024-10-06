@@ -1,11 +1,27 @@
+using System.Text.RegularExpressions;
 using LeMat.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
 
 namespace LeMat.Infra.Repositories;
 public class FilesRepository : IFilesRepository {
-	public FilesRepository() { }
+	public FilesRepository() {
+		if (!Directory.Exists(_uploadDirectory))
+			Directory.CreateDirectory(_uploadDirectory);
+	}
 	private static readonly string _uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "static");
+
+	private string GetSafeFilePath(string fileName) {
+		var fullFilePath = Path.Combine(_uploadDirectory, fileName);
+		fullFilePath = Path.GetFullPath(fullFilePath);
+
+		var fullUploadDirectory = Path.GetFullPath(_uploadDirectory);
+
+		if (!fullFilePath.StartsWith(fullUploadDirectory, StringComparison.OrdinalIgnoreCase))
+			throw new UnauthorizedAccessException("Invalid file path");
+
+		return fullFilePath;
+	}
 
 	public async Task<string> UploadImageAsync(IFormFile file, List<string> allowedExtensions = null, long maxFileSizeBytes = 5 * 1024 * 1024) {
 		if (file == null || file.Length == 0)
@@ -16,14 +32,14 @@ public class FilesRepository : IFilesRepository {
 
 		var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
+		if (!Regex.IsMatch(fileExtension, @"^\.[a-z0-9]+$"))
+			throw new ArgumentException("Extensão do arquivo inválida");
+
 		if (allowedExtensions != null && allowedExtensions.Any() && !allowedExtensions.Contains(fileExtension))
 			throw new ArgumentException("Extensão de arquivo não permitida");
 
-		if (!Directory.Exists(_uploadDirectory))
-			Directory.CreateDirectory(_uploadDirectory);
-
 		var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
-		var filePath = Path.Combine(_uploadDirectory, uniqueFileName);
+		var filePath = GetSafeFilePath(uniqueFileName);
 
 		using (var stream = new MemoryStream()) {
 			await file.CopyToAsync(stream);
@@ -42,10 +58,12 @@ public class FilesRepository : IFilesRepository {
 			}
 		}
 
-		return filePath;
+		return uniqueFileName;
 	}
 
-	public async Task<string> GetFileAsBase64Async(string filePath) {
+
+	public async Task<string> GetFileAsBase64Async(string fileName) {
+		var filePath = GetSafeFilePath(fileName);
 		if (!File.Exists(filePath))
 			throw new FileNotFoundException("Arquivo não encontrado");
 
@@ -53,7 +71,8 @@ public class FilesRepository : IFilesRepository {
 		return Convert.ToBase64String(fileBytes);
 	}
 
-	public async Task DeleteFileAsync(string filePath) {
+	public async Task DeleteFileAsync(string fileName) {
+		var filePath = GetSafeFilePath(fileName);
 		if (!File.Exists(filePath))
 			throw new FileNotFoundException("Arquivo não encontrado");
 		await Task.Run(() => File.Delete(filePath));

@@ -5,13 +5,13 @@ namespace LeMat.Domain.Entities;
 
 public class Image : Entity {
 	private Image() { }
-	public Image(string imagePath, int productId) {
-		ImagePath = imagePath;
+	public Image(string imageName, int productId) {
+		ImageName = imageName;
 		ProductId = productId;
 
 		Validate();
 	}
-	public string ImagePath { get; private set; }
+	public string ImageName { get; private set; }
 	public int ProductId { get; private set; }
 	public virtual Product Product { get; private set; }
 

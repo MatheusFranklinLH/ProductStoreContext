@@ -34,7 +34,7 @@ public class ProductImageHandler :
 		foreach (var image in product.Images) {
 			string imageBase64 = null;
 			try {
-				imageBase64 = await _filesRepository.GetFileAsBase64Async(image.ImagePath);
+				imageBase64 = await _filesRepository.GetFileAsBase64Async(image.ImageName);
 			}
 			catch { }
 			imageBase64 = "data:image/jpeg;base64," + imageBase64;
@@ -57,8 +57,8 @@ public class ProductImageHandler :
 		List<Image> newImages = new();
 		foreach (var imageFile in request.Images) {
 			try {
-				string newFilePath = await _filesRepository.UploadImageAsync(imageFile, new() { ".jpeg", ".jpg", ".png" });
-				newImages.Add(new(newFilePath, request.ProductId));
+				string newFileName = await _filesRepository.UploadImageAsync(imageFile, new() { ".jpeg", ".jpg", ".png" });
+				newImages.Add(new(newFileName, request.ProductId));
 			}
 			catch (ArgumentException ae) {
 				return new Response(null, 500, ae.Message);
@@ -70,7 +70,7 @@ public class ProductImageHandler :
 
 		foreach (var oldImage in product.Images) {
 			try {
-				await _filesRepository.DeleteFileAsync(oldImage.ImagePath);
+				await _filesRepository.DeleteFileAsync(oldImage.ImageName);
 			}
 			catch (FileNotFoundException) { }
 			catch {
@@ -100,8 +100,8 @@ public class ProductImageHandler :
 
 		Image newImage;
 		try {
-			string newFilePath = await _filesRepository.UploadImageAsync(request.Image, new() { ".jpeg", ".jpg", ".png" });
-			newImage = new(newFilePath, request.ProductId);
+			string newFileName = await _filesRepository.UploadImageAsync(request.Image, new() { ".jpeg", ".jpg", ".png" });
+			newImage = new(newFileName, request.ProductId);
 		}
 		catch (ArgumentException ae) {
 			return new Response(null, 500, ae.Message);
@@ -130,7 +130,7 @@ public class ProductImageHandler :
 			return new Response(null, 400, "Impossível encontrar imagem!");
 
 		try {
-			await _filesRepository.DeleteFileAsync(image.ImagePath);
+			await _filesRepository.DeleteFileAsync(image.ImageName);
 		}
 		catch (FileNotFoundException) { }
 		catch {

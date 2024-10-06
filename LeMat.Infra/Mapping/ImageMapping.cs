@@ -21,7 +21,7 @@ public class ImageMapping : IEntityTypeConfiguration<Image> {
 			.HasColumnName("modified_at")
 			.HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-		builder.Property(x => x.ImagePath)
+		builder.Property(x => x.ImageName)
 			.IsRequired(true)
 			.HasColumnType("VARCHAR(60)")
 			.HasColumnName("imagePath");
@@ -29,7 +29,7 @@ public class ImageMapping : IEntityTypeConfiguration<Image> {
 		builder.Property(x => x.ProductId)
 			.HasColumnName("product_id");
 
-		builder.Property(x => x.ImagePath)
+		builder.Property(x => x.ImageName)
 			.HasColumnType("VARCHAR(100)")
 			.HasColumnName("image_path");
 
