@@ -11,7 +11,7 @@ namespace LeMat.Domain.Handlers;
 
 public class ProductImageHandler :
 	Notifiable<Notification>,
-	IHandler<UpdateProductImageRequest>,
+	IHandler<UpdateProductImagesRequest>,
 	IHandler<DeleteIdRequest> {
 	private readonly IProductImageRepository _repository;
 	private readonly IFilesRepository _filesRepository;
@@ -44,15 +44,17 @@ public class ProductImageHandler :
 		return new Response(images);
 	}
 
-	public async Task<IResponse> Handle(UpdateProductImageRequest request) {
+	public async Task<IResponse> Handle(UpdateProductImagesRequest request) {
 		request.Validate();
 		if (!request.IsValid)
 			return new Response(request.Notifications, 400, "Parâmetros de entrada inválidos!");
 
-		Image newImage;
+		List<Image> newImages = new();
 		try {
-			string newFileName = await _filesRepository.UploadImageAsync(request.Image, new() { ".jpeg", ".jpg", ".png" });
-			newImage = new(newFileName, request.ProductId);
+			foreach (var image in request.Images) {
+				string newFileName = await _filesRepository.UploadImageAsync(image, new() { ".jpeg", ".jpg", ".png" });
+				newImages.Add(new(newFileName, request.ProductId));
+			}
 		}
 		catch (ArgumentException ae) {
 			return new Response(null, 500, ae.Message);
@@ -61,14 +63,19 @@ public class ProductImageHandler :
 			return new Response(null, 500, "Erro ao tentar salvar imagem!");
 		}
 
-		AddNotifications(newImage);
+		newImages.ForEach(x => AddNotifications(x));
 
 		if (!IsValid)
 			return new Response(Notifications, 400, "Impossível fazer upload de imagem do produto!");
 		try {
-			await _repository.CreateAsync(newImage);
+			await _repository.CreateManyImagesAsync(newImages);
 		}
 		catch {
+			try {
+				foreach (var image in newImages)
+					await _filesRepository.DeleteFileAsync(image.ImageName);
+			}
+			catch { }
 			return new Response(null, 500, "Não foi atualizar criar produto!");
 		}
 

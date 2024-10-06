@@ -24,7 +24,7 @@ public class ProductImageController : ControllerBase {
 
 	[HttpPost]
 	public async Task<ActionResult<Response>> UploadImage(
-		[FromForm] UpdateProductImageRequest request,
+		[FromForm] UpdateProductImagesRequest request,
 		[FromServices] ProductImageHandler handler
 	) {
 		var response = (Response)await handler.Handle(request);
