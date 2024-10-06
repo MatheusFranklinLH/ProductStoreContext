@@ -47,10 +47,11 @@ public class ProductHandler :
 		await _transactionRepository.BeginTransactionAsync();
 		try {
 			await _repository.CreateAsync(product);
-			foreach (var imageFile in request.Images) {
-				string newFileName = await _filesRepository.UploadImageAsync(imageFile, new() { ".jpeg", ".jpg", ".png" });
-				newImages.Add(new(newFileName, product.Id));
-			}
+			if (request.Images is not null)
+				foreach (var imageFile in request.Images) {
+					string newFileName = await _filesRepository.UploadImageAsync(imageFile, new() { ".jpeg", ".jpg", ".png" });
+					newImages.Add(new(newFileName, product.Id));
+				}
 			newImages.ForEach(x => AddNotifications(x));
 			if (!IsValid) {
 				await CreateProductRollbackAsync(newImages);
